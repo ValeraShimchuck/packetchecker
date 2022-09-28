@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "packetchecker",
+  "version": "${version}",
+  "name": "Packetchecker",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/packetchecker/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "net.lollipopmc.packetchecker.client.PacketCheckerClient"
+    ]
+  },
+  "mixins": [
+    "packetchecker.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": "*",
+    "minecraft": "1.18.2"
+  }
+}
