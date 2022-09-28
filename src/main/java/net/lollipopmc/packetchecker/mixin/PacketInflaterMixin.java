@@ -19,8 +19,8 @@ public class PacketInflaterMixin {
 
     @Inject(method = "decode", at = @At("HEAD"))
     private void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> objects, CallbackInfo ci) {
-        //ByteBuf copy = buf.copy();
-        //LOGGER.info("input bytes: " + printByteArray(copy));
+        ByteBuf copy = buf.copy();
+        LOGGER.info("input bytes: " + printByteArray(copy));
     }
     private String printByteArray(ByteBuf buf) {
         if (buf.readableBytes() > 30) buf.writerIndex(30);
