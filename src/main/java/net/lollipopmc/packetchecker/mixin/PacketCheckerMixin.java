@@ -1,5 +1,6 @@
 package net.lollipopmc.packetchecker.mixin;
 
+import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.*;
 import net.minecraft.network.listener.PacketListener;
@@ -14,6 +15,7 @@ import net.minecraft.network.packet.s2c.login.*;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +39,17 @@ public class PacketCheckerMixin {
     private static <T extends PacketListener> void handler(Packet<T> packet, PacketListener listener, CallbackInfo ci) {
         if (packet instanceof EntityS2CPacket) return;
         if (packet instanceof ChunkDataS2CPacket) return;
+        if (packet instanceof EntitySetHeadYawS2CPacket) return;
+        if (packet instanceof EntityVelocityUpdateS2CPacket) return;
+        if (packet instanceof EntityAttributesS2CPacket) return;
+        if (packet instanceof EntitiesDestroyS2CPacket) return;
+        if (packet instanceof LightUpdateS2CPacket) return;
+        //if (packet instanceof EntityTrackerUpdateS2CPacket) return;
         LOGGER.info("from server: " + SERVER_PACKET_MAPPINGS.getOrDefault(packet.getClass(), packet.getClass().toString()));
+        if (packet instanceof QueryResponseS2CPacket responseS2CPacket) {
+            Gson gson = new Gson();
+            LOGGER.info(gson.toJson(responseS2CPacket.getServerMetadata()));
+        }
     }
 
     @Inject(method = "send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"))
@@ -49,6 +61,11 @@ public class PacketCheckerMixin {
     @Inject(method = "exceptionCaught", at = @At("HEAD"))
     private void exception(ChannelHandlerContext context, Throwable ex, CallbackInfo ci) {
         ex.printStackTrace();
+    }
+
+    @Inject(method = "disconnect", at = @At("HEAD"))
+    private void disconnect(Text disconnectReason, CallbackInfo ci) {
+        LOGGER.info("disconnect player: " + disconnectReason.getString());
     }
 
     static {
