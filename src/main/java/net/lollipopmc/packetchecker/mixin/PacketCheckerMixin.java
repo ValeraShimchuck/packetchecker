@@ -2,6 +2,8 @@ package net.lollipopmc.packetchecker.mixin;
 
 import com.google.gson.Gson;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.network.*;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -52,8 +54,8 @@ public class PacketCheckerMixin {
         }
     }
 
-    @Inject(method = "send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"))
-    private void send(Packet<?> packet, PacketCallbacks callbacks, CallbackInfo ci) {
+    @Inject(method = "send(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At("HEAD"))
+    private void send(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> callback, CallbackInfo ci) {
         if (packet instanceof PlayerMoveC2SPacket) return;
         LOGGER.info("to server: " + CLIENT_PACKET_MAPPINGS.getOrDefault(packet.getClass(), packet.getClass().toString()));
     }
@@ -70,7 +72,7 @@ public class PacketCheckerMixin {
 
     static {
         //noinspection RedundantTypeArguments (explicit type arguments speedup compilation and analysis time)
-        CLIENT_PACKET_MAPPINGS = Map.<Class<?>, String>ofEntries(entry(QueryPingC2SPacket.class, "QueryPingC2SPacket"), entry(QueryRequestC2SPacket.class, "QueryRequestC2SPacket"), entry(HandshakeC2SPacket.class, "HandshakeC2SPacket"), entry(LoginHelloC2SPacket.class, "LoginHelloC2SPacket"), entry(LoginKeyC2SPacket.class, "LoginKeyC2SPacket"), entry(LoginQueryResponseC2SPacket.class, "LoginQueryResponseC2SPacket"), entry(AdvancementTabC2SPacket.class, "AdvancementTabC2SPacket"), entry(BoatPaddleStateC2SPacket.class, "BoatPaddleStateC2SPacket"), entry(BookUpdateC2SPacket.class, "BookUpdateC2SPacket"), entry(ButtonClickC2SPacket.class, "ButtonClickC2SPacket"), entry(ChatMessageC2SPacket.class, "ChatMessageC2SPacket"), entry(ClickSlotC2SPacket.class, "ClickSlotC2SPacket"), entry(ClientCommandC2SPacket.class, "ClientCommandC2SPacket"), entry(ClientStatusC2SPacket.class, "ClientStatusC2SPacket"), entry(ClientSettingsC2SPacket.class, "ClientSettingsC2SPacket"), entry(CloseHandledScreenC2SPacket.class, "CloseHandledScreenC2SPacket"), entry(CommandExecutionC2SPacket.class, "CommandExecutionC2SPacket"), entry(CraftRequestC2SPacket.class, "CraftRequestC2SPacket"), entry(CreativeInventoryActionC2SPacket.class, "CreativeInventoryActionC2SPacket"), entry(CustomPayloadC2SPacket.class, "CustomPayloadC2SPacket"), entry(HandSwingC2SPacket.class, "HandSwingC2SPacket"), entry(JigsawGeneratingC2SPacket.class, "JigsawGeneratingC2SPacket"), entry(KeepAliveC2SPacket.class, "KeepAliveC2SPacket"), entry(MessageAcknowledgmentC2SPacket.class, "MessageAcknowledgmentC2SPacket"), entry(PickFromInventoryC2SPacket.class, "PickFromInventoryC2SPacket"), entry(PlayerActionC2SPacket.class, "PlayerActionC2SPacket"), entry(PlayerInputC2SPacket.class, "PlayerInputC2SPacket"), entry(PlayerInteractBlockC2SPacket.class, "PlayerInteractBlockC2SPacket"), entry(PlayerInteractEntityC2SPacket.class, "PlayerInteractEntityC2SPacket"), entry(PlayerMoveC2SPacket.class, "PlayerMoveC2SPacket"), entry(PlayPongC2SPacket.class, "PlayPongC2SPacket"), entry(QueryBlockNbtC2SPacket.class, "QueryBlockNbtC2SPacket"), entry(QueryEntityNbtC2SPacket.class, "QueryEntityNbtC2SPacket"), entry(RecipeBookDataC2SPacket.class, "RecipeBookDataC2SPacket"), entry(RecipeCategoryOptionsC2SPacket.class, "RecipeCategoryOptionsC2SPacket"), entry(RenameItemC2SPacket.class, "RenameItemC2SPacket"), entry(RequestChatPreviewC2SPacket.class, "RequestChatPreviewC2SPacket"), entry(RequestCommandCompletionsC2SPacket.class, "RequestCommandCompletionsC2SPacket"), entry(ResourcePackStatusC2SPacket.class, "ResourcePackStatusC2SPacket"), entry(SelectMerchantTradeC2SPacket.class, "SelectMerchantTradeC2SPacket"), entry(SpectatorTeleportC2SPacket.class, "SpectatorTeleportC2SPacket"), entry(TeleportConfirmC2SPacket.class, "TeleportConfirmC2SPacket"), entry(UpdateBeaconC2SPacket.class, "UpdateBeaconC2SPacket"), entry(UpdateCommandBlockC2SPacket.class, "UpdateCommandBlockC2SPacket"), entry(UpdateCommandBlockMinecartC2SPacket.class, "UpdateCommandBlockMinecartC2SPacket"), entry(UpdateDifficultyC2SPacket.class, "UpdateDifficultyC2SPacket"), entry(UpdateDifficultyLockC2SPacket.class, "UpdateDifficultyLockC2SPacket"), entry(UpdateJigsawC2SPacket.class, "UpdateJigsawC2SPacket"), entry(UpdatePlayerAbilitiesC2SPacket.class, "UpdatePlayerAbilitiesC2SPacket"), entry(UpdateSelectedSlotC2SPacket.class, "UpdateSelectedSlotC2SPacket"), entry(UpdateSignC2SPacket.class, "UpdateSignC2SPacket"), entry(UpdateStructureBlockC2SPacket.class, "UpdateStructureBlockC2SPacket"), entry(VehicleMoveC2SPacket.class, "VehicleMoveC2SPacket"));
+        CLIENT_PACKET_MAPPINGS = Map.<Class<?>, String>ofEntries(entry(QueryPingC2SPacket.class, "QueryPingC2SPacket"), entry(QueryRequestC2SPacket.class, "QueryRequestC2SPacket"), entry(HandshakeC2SPacket.class, "HandshakeC2SPacket"), entry(LoginHelloC2SPacket.class, "LoginHelloC2SPacket"), entry(LoginKeyC2SPacket.class, "LoginKeyC2SPacket"), entry(LoginQueryResponseC2SPacket.class, "LoginQueryResponseC2SPacket"), entry(AdvancementTabC2SPacket.class, "AdvancementTabC2SPacket"), entry(BoatPaddleStateC2SPacket.class, "BoatPaddleStateC2SPacket"), entry(BookUpdateC2SPacket.class, "BookUpdateC2SPacket"), entry(ButtonClickC2SPacket.class, "ButtonClickC2SPacket"), entry(ChatMessageC2SPacket.class, "ChatMessageC2SPacket"), entry(ClickSlotC2SPacket.class, "ClickSlotC2SPacket"), entry(ClientCommandC2SPacket.class, "ClientCommandC2SPacket"), entry(ClientStatusC2SPacket.class, "ClientStatusC2SPacket"), entry(ClientSettingsC2SPacket.class, "ClientSettingsC2SPacket"), entry(CloseHandledScreenC2SPacket.class, "CloseHandledScreenC2SPacket"), entry(CraftRequestC2SPacket.class, "CraftRequestC2SPacket"), entry(CreativeInventoryActionC2SPacket.class, "CreativeInventoryActionC2SPacket"), entry(CustomPayloadC2SPacket.class, "CustomPayloadC2SPacket"), entry(HandSwingC2SPacket.class, "HandSwingC2SPacket"), entry(JigsawGeneratingC2SPacket.class, "JigsawGeneratingC2SPacket"), entry(KeepAliveC2SPacket.class, "KeepAliveC2SPacket"), entry(PickFromInventoryC2SPacket.class, "PickFromInventoryC2SPacket"), entry(PlayerActionC2SPacket.class, "PlayerActionC2SPacket"), entry(PlayerInputC2SPacket.class, "PlayerInputC2SPacket"), entry(PlayerInteractBlockC2SPacket.class, "PlayerInteractBlockC2SPacket"), entry(PlayerInteractEntityC2SPacket.class, "PlayerInteractEntityC2SPacket"), entry(PlayerMoveC2SPacket.class, "PlayerMoveC2SPacket"), entry(PlayPongC2SPacket.class, "PlayPongC2SPacket"), entry(QueryBlockNbtC2SPacket.class, "QueryBlockNbtC2SPacket"), entry(QueryEntityNbtC2SPacket.class, "QueryEntityNbtC2SPacket"), entry(RecipeBookDataC2SPacket.class, "RecipeBookDataC2SPacket"), entry(RecipeCategoryOptionsC2SPacket.class, "RecipeCategoryOptionsC2SPacket"), entry(RenameItemC2SPacket.class, "RenameItemC2SPacket"), entry(RequestCommandCompletionsC2SPacket.class, "RequestCommandCompletionsC2SPacket"), entry(ResourcePackStatusC2SPacket.class, "ResourcePackStatusC2SPacket"), entry(SelectMerchantTradeC2SPacket.class, "SelectMerchantTradeC2SPacket"), entry(SpectatorTeleportC2SPacket.class, "SpectatorTeleportC2SPacket"), entry(TeleportConfirmC2SPacket.class, "TeleportConfirmC2SPacket"), entry(UpdateBeaconC2SPacket.class, "UpdateBeaconC2SPacket"), entry(UpdateCommandBlockC2SPacket.class, "UpdateCommandBlockC2SPacket"), entry(UpdateCommandBlockMinecartC2SPacket.class, "UpdateCommandBlockMinecartC2SPacket"), entry(UpdateDifficultyC2SPacket.class, "UpdateDifficultyC2SPacket"), entry(UpdateDifficultyLockC2SPacket.class, "UpdateDifficultyLockC2SPacket"), entry(UpdateJigsawC2SPacket.class, "UpdateJigsawC2SPacket"), entry(UpdatePlayerAbilitiesC2SPacket.class, "UpdatePlayerAbilitiesC2SPacket"), entry(UpdateSelectedSlotC2SPacket.class, "UpdateSelectedSlotC2SPacket"), entry(UpdateSignC2SPacket.class, "UpdateSignC2SPacket"), entry(UpdateStructureBlockC2SPacket.class, "UpdateStructureBlockC2SPacket"), entry(VehicleMoveC2SPacket.class, "VehicleMoveC2SPacket"));
         //noinspection RedundantTypeArguments (explicit type arguments speedup compilation and analysis time)
         SERVER_PACKET_MAPPINGS = Map.<Class<?>, String>ofEntries(
                 entry(TitleS2CPacket.class, "TitleS2CPacket"),
@@ -87,10 +89,7 @@ public class PacketCheckerMixin {
                 entry(BlockEventS2CPacket.class, "BlockEventS2CPacket"),
                 entry(BlockUpdateS2CPacket.class, "BlockUpdateS2CPacket"),
                 entry(BossBarS2CPacket.class, "BossBarS2CPacket"),
-                entry(ChatMessageS2CPacket.class, "ChatMessageS2CPacket"),
-                entry(ChatPreviewS2CPacket.class, "ChatPreviewS2CPacket"),
-                entry(ChatPreviewStateChangeS2CPacket.class, "ChatPreviewStateChangeS2CPacket"),
-                entry(ChatSuggestionsS2CPacket.class, "ChatSuggestionsS2CPacket"),
+                entry(GameMessageS2CPacket.class, "ChatMessageS2CPacket"),
                 entry(ChunkDataS2CPacket.class, "ChunkDataS2CPacket"),
                 entry(ChunkDeltaUpdateS2CPacket.class, "ChunkDeltaUpdateS2CPacket"),
                 entry(ChunkLoadDistanceS2CPacket.class, "ChunkLoadDistanceS2CPacket"),
@@ -131,14 +130,12 @@ public class PacketCheckerMixin {
                 entry(GameMessageS2CPacket.class, "GameMessageS2CPacket"),
                 entry(GameStateChangeS2CPacket.class, "GameStateChangeS2CPacket"),
                 entry(HealthUpdateS2CPacket.class, "HealthUpdateS2CPacket"),
-                entry(HideMessageS2CPacket.class, "HideMessageS2CPacket"),
                 entry(InventoryS2CPacket.class, "InventoryS2CPacket"),
                 entry(ItemPickupAnimationS2CPacket.class, "ItemPickupAnimationS2CPacket"),
                 entry(KeepAliveS2CPacket.class, "KeepAliveS2CPacket"),
                 entry(LightUpdateS2CPacket.class, "LightUpdateS2CPacket"),
                 entry(LookAtS2CPacket.class, "LookAtS2CPacket"),
                 entry(MapUpdateS2CPacket.class, "MapUpdateS2CPacket"),
-                entry(MessageHeaderS2CPacket.class, "MessageHeaderS2CPacket"),
                 entry(NbtQueryResponseS2CPacket.class, "NbtQueryResponseS2CPacket"),
                 entry(OpenHorseScreenS2CPacket.class, "OpenHorseScreenS2CPacket"),
                 entry(OpenScreenS2CPacket.class, "OpenScreenS2CPacket"),
@@ -165,11 +162,9 @@ public class PacketCheckerMixin {
                 entry(ScreenHandlerPropertyUpdateS2CPacket.class, "ScreenHandlerPropertyUpdateS2CPacket"),
                 entry(ScreenHandlerSlotUpdateS2CPacket.class, "ScreenHandlerSlotUpdateS2CPacket"),
                 entry(SelectAdvancementTabS2CPacket.class, "SelectAdvancementTabS2CPacket"),
-                entry(ServerMetadataS2CPacket.class, "ServerMetadataS2CPacket"),
                 entry(SetCameraEntityS2CPacket.class, "SetCameraEntityS2CPacket"),
                 entry(SetTradeOffersS2CPacket.class, "SetTradeOffersS2CPacket"),
                 entry(SignEditorOpenS2CPacket.class, "SignEditorOpenS2CPacket"),
-                entry(SimulationDistanceS2CPacket.class, "SimulationDistanceS2CPacket"),
                 entry(StatisticsS2CPacket.class, "StatisticsS2CPacket"),
                 entry(StopSoundS2CPacket.class, "StopSoundS2CPacket"),
                 entry(SubtitleS2CPacket.class, "SubtitleS2CPacket"),
