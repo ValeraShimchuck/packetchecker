@@ -18,8 +18,9 @@
     "packetchecker.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.9",
+    "fabricloader": ">=0.12.12",
     "fabric": "*",
-    "minecraft": "1.19.2"
+    "minecraft": "1.17.1",
+    "java": ">=16"
   }
 }
