@@ -6,10 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkSide;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.registry.Registries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.HexFormat;
 
 @Environment(EnvType.CLIENT)
 public class PacketCheckerClient implements ClientModInitializer {

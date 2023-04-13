@@ -1,13 +1,8 @@
 package net.lollipopmc.packetchecker.mixin;
 
 import com.google.gson.Gson;
-import com.mojang.serialization.Codec;
 import io.netty.channel.ChannelHandlerContext;
-import net.lollipopmc.packetchecker.client.netty.DuplexPacketListener;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.*;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -21,10 +16,7 @@ import net.minecraft.network.packet.s2c.login.*;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.asm.mixin.Mixin;
@@ -66,16 +58,16 @@ public class PacketCheckerMixin {
         if (packet instanceof LoginSuccessS2CPacket loginSuccessS2CPacket) {
             System.out.println("login: " + loginSuccessS2CPacket.getProfile());
         }
-        if (packet instanceof GameJoinS2CPacket gameJoinS2CPacket) {
-            Codec<DynamicRegistryManager> codec = SerializableRegistries.CODEC;
-            DynamicRegistryManager.Immutable data = gameJoinS2CPacket.registryManager();
-            NbtElement nbt = Util.getResult(codec.encodeStart(NbtOps.INSTANCE, data), RuntimeException::new);
-            try (DataOutputStream output = new DataOutputStream(new FileOutputStream("registries.nbt"))) {
-                nbt.write(output);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        //if (packet instanceof GameJoinS2CPacket gameJoinS2CPacket) {
+        //    Codec<DynamicRegistryManager> codec = SerializableRegistries.CODEC;
+        //    DynamicRegistryManager.Immutable data = gameJoinS2CPacket.registryManager();
+        //    NbtElement nbt = Util.getResult(codec.encodeStart(NbtOps.INSTANCE, data), RuntimeException::new);
+        //    try (DataOutputStream output = new DataOutputStream(new FileOutputStream("registries.nbt"))) {
+        //        nbt.write(output);
+        //    } catch (IOException e) {
+        //        throw new RuntimeException(e);
+        //    }
+        //}
     }
 
     @Inject(method = "channelActive", at = @At("HEAD"))
@@ -125,7 +117,7 @@ public class PacketCheckerMixin {
                 entry(HandSwingC2SPacket.class, "HandSwingC2SPacket"),
                 entry(JigsawGeneratingC2SPacket.class, "JigsawGeneratingC2SPacket"),
                 entry(KeepAliveC2SPacket.class, "KeepAliveC2SPacket"),
-                entry(MessageAcknowledgmentC2SPacket.class, "MessageAcknowledgmentC2SPacket"),
+                //entry(MessageAcknowledgmentC2SPacket.class, "MessageAcknowledgmentC2SPacket"),
                 entry(PickFromInventoryC2SPacket.class, "PickFromInventoryC2SPacket"),
                 entry(PlayerActionC2SPacket.class, "PlayerActionC2SPacket"),
                 entry(PlayerInputC2SPacket.class, "PlayerInputC2SPacket"),
@@ -171,7 +163,7 @@ public class PacketCheckerMixin {
                 entry(BlockUpdateS2CPacket.class, "BlockUpdateS2CPacket"),
                 entry(BossBarS2CPacket.class, "BossBarS2CPacket"),
                 entry(ChatMessageS2CPacket.class, "ChatMessageS2CPacket"),
-                entry(ChatSuggestionsS2CPacket.class, "ChatSuggestionsS2CPacket"),
+                //entry(ChatSuggestionsS2CPacket.class, "ChatSuggestionsS2CPacket"),
                 entry(ChunkDataS2CPacket.class, "ChunkDataS2CPacket"),
                 entry(ChunkDeltaUpdateS2CPacket.class, "ChunkDeltaUpdateS2CPacket"),
                 entry(ChunkLoadDistanceS2CPacket.class, "ChunkLoadDistanceS2CPacket"),
