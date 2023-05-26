@@ -21,8 +21,6 @@ import net.minecraft.network.packet.s2c.login.*;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
