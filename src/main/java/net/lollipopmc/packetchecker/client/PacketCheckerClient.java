@@ -15,7 +15,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +43,14 @@ public class PacketCheckerClient implements ClientModInitializer {
     public void onInitializeClient() {
         LOGGER.info(Item.getRawId(Items.PLAYER_HEAD) + "");
         JsonObject jsonObject = new JsonObject();
-        Registries.ITEM.stream().forEach(item -> {
-            int id = Registries.ITEM.getRawId(item);
-            String namespaceValue = Registries.ITEM.getId(item).getPath();
+        Registry.ITEM.stream().forEach(item -> {
+            int id = Registry.ITEM.getRawId(item);
+            String namespaceValue = Registry.ITEM.getId(item).getPath();
             jsonObject.addProperty(id + "", namespaceValue);
         });
         String json = jsonObject.toString();
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("761.json"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(SharedConstants.getProtocolVersion() + ".json"));
             writer.write(json);
             writer.close();
         } catch (IOException e) {

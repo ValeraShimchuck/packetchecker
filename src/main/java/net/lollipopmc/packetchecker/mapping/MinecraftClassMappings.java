@@ -59,7 +59,7 @@ public class MinecraftClassMappings {
             String deObfuscated = entry.getValue().getAsString().replace('/', '.');
             try {
                 mappings.put(Class.forName(obfuscated), deObfuscated);
-            } catch (ClassNotFoundException e) {
+            } catch (Throwable e) {
                 //System.out.println("can't find " + obfuscated);
                 notLoadedCount.incrementAndGet();
             }
