@@ -49,8 +49,8 @@ public class PacketCheckerMixin {
         }
     }
 
-    @Inject(method = "send(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V", at = @At("HEAD"))
-    private void send(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> callback, CallbackInfo ci) {
+    @Inject(method = "send(Lnet/minecraft/network/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("HEAD"))
+    private void send(Packet<?> packet, PacketCallbacks callbacks, CallbackInfo ci) {
         if (packet instanceof PlayerMoveC2SPacket) return;
         LOGGER.info("to server: " + CLIENT_PACKET_MAPPINGS.getOrDefault(packet.getClass(), packet.getClass().toString()));
     }
