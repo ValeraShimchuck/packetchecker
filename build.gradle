@@ -1,3 +1,8 @@
+import groovy.json.JsonOutput
+import java.nio.charset.StandardCharsets
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
 plugins {
     id 'fabric-loom' version '1.0-SNAPSHOT'
     id 'maven-publish'
@@ -44,7 +49,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 17
+def targetJavaVersion = 16
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
@@ -68,13 +73,74 @@ java {
     withSourcesJar()
 }
 
+tasks.register('createMappingsJsonFile') {
+    doLast {
+        File mappingsFile = file('src/main/resources/mappings.json')
+        if (!mappingsFile.exists()) {
+            mappingsFile.createNewFile()
+            mappingsFile.write(getClassMappings())
+        }
+    }
+}
+
 jar {
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }
     archiveClassifier.set("dev")
+    //from('src/main/resources') {
+    //    include 'mappings.json'
+    //}
 
+    //doFirst {
+    //    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //    String jsonClassMappings = getClassMappings()
+    //    outputStream.write(jsonClassMappings.getBytes(StandardCharsets.UTF_8))
+    //    String hardCodePath = "packetchecker-1.0-SNAPSHOT"
+    //    String normalCodePath = "${project.archivesBaseName}-${project.version}"
+    //    ZipOutputStream zipOutputStream = new ZipOutputStream(
+    //            new FileOutputStream("$buildDir/libs/${hardCodePath}.jar")
+    //    )
+    //    zipOutputStream.putNextEntry(new ZipEntry("mappings.json"))
+    //    zipOutputStream.write(outputStream.toByteArray())
+    //    zipOutputStream.closeEntry()
+    //    zipOutputStream.close()
+    //}
+    dependsOn createMappingsJsonFile
 }
+
+
+
+static def serverPackets() {
+    String packageName = "net.minecraft.packet.c2s.play"
+}
+
+def getClassMappings() {
+    File home = new File(System.properties['user.home'] as String)
+    File loomCaches = new File(home, ".gradle/caches/fabric-loom/${project.minecraft_version}/")
+    File mappingPath = new File(loomCaches.listFiles().find { it.isDirectory() }, "mappings.tiny")
+    String[] allFields = mappingPath.text.split("\n")
+    Map<String, String> classMap = new HashMap<String, String>()
+    allFields.each {
+        String[] fieldData = it.split("\t")
+        //println fieldData.toArrayString()
+        if (fieldData.length != 4) return
+        if (fieldData[0] != "c") return
+        classMap.put(fieldData[2], fieldData[3])
+    }
+    return JsonOutput.toJson(classMap)
+}
+
+//tasks.register('mappingsTest') {
+//    doLast {
+//        //configurations.compileClasspath.each { println it }
+//        //def home = new File(System.properties['user.home'] as String)
+//        //def loomCaches = new File(home, ".gradle/caches/fabric-loom/${project.minecraft_version}/")
+//        //def mappingPath = new File(loomCaches.listFiles().find { it.isDirectory() }, "mappings.tiny")
+//        //println mappingPath.text.substring(0, 100)
+//        getClassMappings()
+//    }
+//}
 
 // configure the maven publication
 publishing {
