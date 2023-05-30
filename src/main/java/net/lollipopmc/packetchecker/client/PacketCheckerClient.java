@@ -14,6 +14,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.packet.BundleSplitterPacket;
+import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.registry.Registries;
 import org.slf4j.Logger;
@@ -79,10 +81,15 @@ public class PacketCheckerClient implements ClientModInitializer {
                         packetsMapField.setAccessible(true);
                         Object2IntMap<Class<?>> packetsMap = (Object2IntMap<Class<?>>) packetsMapField.get(handler);
                         networkSideMap.put(side, packetsMap.object2IntEntrySet().stream()
-                                .map(entry -> Map.entry(
-                                        extractCleanPacketName(MinecraftClassMappings.deObfuscateClassSimple(entry.getKey())),
-                                        entry.getIntValue()
-                                ))
+                                .map(entry -> {
+                                    Class<?> packetClass = entry.getKey();
+                                    if (packetClass.isAssignableFrom(BundleSplitterPacket.class))
+                                        packetClass = BundleS2CPacket.class;
+                                    return Map.entry(
+                                            extractCleanPacketName(MinecraftClassMappings.deObfuscateClassSimple(packetClass)),
+                                            entry.getIntValue()
+                                    );
+                                })
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
@@ -97,7 +104,7 @@ public class PacketCheckerClient implements ClientModInitializer {
 
     private String extractCleanPacketName(String packetName) {
         Matcher matcher = PACKET_NAME_PATTERN.matcher(packetName);
-        if (!matcher.find()) throw new IllegalArgumentException("packet doesn't contain pattern");
+        if (!matcher.find()) throw new IllegalArgumentException("packet doesn't contain pattern " + packetName);
         String name = matcher.group(1);
         String subClass = matcher.group(4);
         if (subClass != null) name = name + subClass;

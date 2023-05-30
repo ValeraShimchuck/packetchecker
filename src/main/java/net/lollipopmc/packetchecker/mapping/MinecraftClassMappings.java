@@ -25,7 +25,8 @@ public class MinecraftClassMappings {
     }
 
     public static String deObfuscateClassSimple(Class<?> clazz) {
-        return getSimpleName(deObfuscateClassName(clazz));
+        String fullName = deObfuscateClassName(clazz);
+        return getSimpleName(fullName);
     }
 
     public static Map<Class<?>, String> getMapByDeObfuscatedPackage(String packageName) {
