@@ -41,6 +41,7 @@ public class PacketCheckerClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        if (true) return;
         LOGGER.info(Item.getRawId(Items.PLAYER_HEAD) + "");
         JsonObject jsonObject = new JsonObject();
         Registries.ITEM.stream().forEach(item -> {

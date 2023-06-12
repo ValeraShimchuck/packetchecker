@@ -22,9 +22,9 @@ public class DecryptedByteViewerMixin {
             List<Object> list,
             CallbackInfo ci
     ) {
-        ByteBuf buf = (ByteBuf) list.get(0);
-        System.out.println("decrypted packet");
-        BytePrinter.printBytes(buf);
+        //ByteBuf buf = (ByteBuf) list.get(0);
+        //System.out.println("decrypted packet");
+        //BytePrinter.printBytes(buf);
     }
 
 }

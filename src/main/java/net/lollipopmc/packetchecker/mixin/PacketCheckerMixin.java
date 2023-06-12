@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.mojang.serialization.Codec;
 import io.netty.channel.ChannelHandlerContext;
 import net.lollipopmc.packetchecker.client.netty.DuplexPacketListener;
+import net.lollipopmc.packetchecker.mapping.DeobfuscatedWriter;
+import net.lollipopmc.packetchecker.mapping.MinecraftClassMappings;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
@@ -30,10 +32,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.PrintStream;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+
 import static net.lollipopmc.packetchecker.client.PacketCheckerClient.*;
 
 @Mixin(ClientConnection.class)
 public class PacketCheckerMixin {
+
+
 
     @Inject(method = "handlePacket",
             at = @At("HEAD")
@@ -45,29 +55,20 @@ public class PacketCheckerMixin {
         if (packet instanceof EntityAttributesS2CPacket) return;
         if (packet instanceof EntitiesDestroyS2CPacket) return;
         if (packet instanceof LightUpdateS2CPacket) return;
-        //if (packet instanceof EntityTrackerUpdateS2CPacket) return;
+        if (packet instanceof EntityTrackerUpdateS2CPacket) return;
+        if (packet instanceof EntityPositionS2CPacket) return;
+        if (packet instanceof ChunkDataS2CPacket) return;
+        if (packet instanceof UnloadChunkS2CPacket) return;
+        if (packet instanceof WorldTimeUpdateS2CPacket) return;
+        if (packet instanceof PlayerListHeaderS2CPacket) return;
         LOGGER.info("from server: " + SERVER_PACKET_MAPPINGS.getOrDefault(packet.getClass(), packet.getClass().toString()));
-        if (packet instanceof QueryResponseS2CPacket responseS2CPacket) {
-            Gson gson = new Gson();
-            LOGGER.info(gson.toJson(responseS2CPacket.getServerMetadata()));
+        if (packet instanceof InventoryS2CPacket inventory) {
+            System.out.println("has got inventory update. window id: " + inventory.getSyncId() + " content: " +
+                    inventory.getContents().stream().map(item -> item.getItem().toString()).toList());
         }
-        if (packet instanceof ChunkDataS2CPacket chunkDataS2CPacket) {
-            NbtCompound nbt = chunkDataS2CPacket.getChunkData().getHeightmap();
-            System.out.println(nbt.toString());
+        if (packet instanceof OpenScreenS2CPacket openScreen) {
+            System.out.println("open inventory: " + openScreen.getSyncId());
         }
-        if (packet instanceof LoginSuccessS2CPacket loginSuccessS2CPacket) {
-            System.out.println("login: " + loginSuccessS2CPacket.getProfile());
-        }
-        //if (packet instanceof GameJoinS2CPacket gameJoinS2CPacket) {
-        //    Codec<DynamicRegistryManager> codec = SerializableRegistries.CODEC;
-        //    DynamicRegistryManager.Immutable data = gameJoinS2CPacket.registryManager();
-        //    NbtElement nbt = Util.getResult(codec.encodeStart(NbtOps.INSTANCE, data), RuntimeException::new);
-        //    try (DataOutputStream output = new DataOutputStream(new FileOutputStream("registries.nbt"))) {
-        //        nbt.write(output);
-        //    } catch (IOException e) {
-        //        throw new RuntimeException(e);
-        //    }
-        //}
     }
 
     @Inject(method = "channelActive", at = @At("HEAD"))
@@ -83,7 +84,7 @@ public class PacketCheckerMixin {
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"))
     private void exception(ChannelHandlerContext context, Throwable ex, CallbackInfo ci) {
-        ex.printStackTrace();
+        printStackTrace(ex);
     }
 
     @Inject(method = "disconnect", at = @At("HEAD"))
@@ -91,6 +92,9 @@ public class PacketCheckerMixin {
         LOGGER.info("disconnect player: " + disconnectReason.getString());
     }
 
+    private void printStackTrace(Throwable ex) {
+        ex.printStackTrace(DeobfuscatedWriter.ERROR);
+    }
 
 
 }
