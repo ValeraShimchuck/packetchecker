@@ -9,9 +9,11 @@ import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MinecraftClassMappings {
 
@@ -58,8 +60,19 @@ public class MinecraftClassMappings {
         json.entrySet().forEach(entry -> {
             String obfuscated  = entry.getKey().replace('/', '.');
             String deObfuscated = entry.getValue().getAsString().replace('/', '.');
+            //if (deObfuscated.contains("net.minecraft.client.gl") ) {
+            //    String regex = "net\\.minecraft\\.client\\.gl.*";
+            //    System.out.println("check class " + obfuscated + " / "  + deObfuscated);
+            //    System.out.println("match: " + deObfuscated.matches(regex));
+            //}
+            if (!toLoad(obfuscated) || !toLoadDeobfuscated(deObfuscated)) {
+                System.out.println("skip " + obfuscated + "/" + deObfuscated + " due to filter");
+                return;
+            }
             try {
                 mappings.put(Class.forName(obfuscated), deObfuscated);
+            } catch (ExceptionInInitializerError e) {
+                notLoadedCount.incrementAndGet();
             } catch (Throwable e) {
                 //System.out.println("can't find " + obfuscated);
                 notLoadedCount.incrementAndGet();
@@ -67,6 +80,27 @@ public class MinecraftClassMappings {
         });
         System.out.println("can't load: " + notLoadedCount.get());
         MAPPINGS = Map.copyOf(mappings);
+    }
+
+    private static boolean toLoad(String obfuscated) {
+        return Stream.of(
+                "net.minecraft.class_310$class_5859",
+                "net.minecraft.class_310",
+                "net.minecraft.class_310$1",
+                "net.minecraft.class_310$class_5859$1",
+                "net.minecraft.class_310$class_5859$2",
+                "net.minecraft.class_310$class_5859$3",
+                "net.minecraft.class_310$class_5859$4",
+                "net.minecraft.class_7168",
+                "net.minecraft.class_7168$class_7170"
+        ).noneMatch(str -> str.equals(obfuscated));
+    }
+
+    private static boolean toLoadDeobfuscated(String deobfuscated) {
+        return Stream.of(
+                //"net\\.minecraft\\.client\\.render.*",
+                "net\\.minecraft\\.client\\.gl.*"
+        ).noneMatch(deobfuscated::matches);
     }
 
 }

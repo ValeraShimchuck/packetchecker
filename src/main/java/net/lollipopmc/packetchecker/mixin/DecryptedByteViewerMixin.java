@@ -14,8 +14,8 @@ import java.util.List;
 @Mixin(PacketDecryptor.class)
 public class DecryptedByteViewerMixin {
 
-    @Inject(method = "decode(Lio/netty/channel/ChannelHandlerContext;Lio/netty/buffer/ByteBuf;Ljava/util/List;)V",
-            at = @At("RETURN"))
+    //@Inject(method = "decode(Lio/netty/channel/ChannelHandlerContext;Lio/netty/buffer/ByteBuf;Ljava/util/List;)V",
+    //        at = @At("RETURN"))
     private void printDecrypted(
             ChannelHandlerContext channelHandlerContext,
             ByteBuf byteBuf,

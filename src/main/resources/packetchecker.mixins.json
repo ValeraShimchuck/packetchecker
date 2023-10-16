@@ -4,6 +4,7 @@
   "package": "net.lollipopmc.packetchecker.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "DebugMixin",
     "DecryptedByteViewerMixin"
   ],
   "client": [

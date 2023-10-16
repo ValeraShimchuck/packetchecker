@@ -14,7 +14,7 @@ import java.security.PublicKey;
 @Mixin(LoginKeyC2SPacket.class)
 public class LoginKeyMixin {
 
-    @Inject(method = "<init>*", at = @At("RETURN"))
+    //@Inject(method = "<init>*", at = @At("RETURN"))
     private void write(SecretKey secretKey, PublicKey publicKey, byte[] nonce, CallbackInfo ci) {
         SecretKeyAccessor.setSecretKey(secretKey);
     }
