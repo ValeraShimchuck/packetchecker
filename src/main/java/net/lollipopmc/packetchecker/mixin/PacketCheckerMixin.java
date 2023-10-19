@@ -37,6 +37,7 @@ public class PacketCheckerMixin {
     )
     private static <T extends PacketListener> void handler(Packet<T> packet, PacketListener listener, CallbackInfo ci) {
         if (packet instanceof EntityS2CPacket) return;
+        if (packet instanceof EntityPositionS2CPacket) return;
         if (packet instanceof ChunkDataS2CPacket) return;
         if (packet instanceof EntitySetHeadYawS2CPacket) return;
         if (packet instanceof EntityVelocityUpdateS2CPacket) return;
