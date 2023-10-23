@@ -83,6 +83,7 @@ public class PacketCheckerMixin {
         if (packet instanceof ChunkDataS2CPacket) return;
         if (packet instanceof PlayPingS2CPacket) return;
         if (packet instanceof WorldTimeUpdateS2CPacket) return;
+
         if (packet instanceof BundleS2CPacket commandTreeS2CPacket) {
             //CommandRegistryAccess access = CommandRegistryAccess.of(
             //        (RegistryWrapper.WrapperLookup)MinecraftClient.getInstance().getNetworkHandler().getRegistryManager(),
